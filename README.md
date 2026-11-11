@@ -2,6 +2,8 @@
 
 [Changelog](changelog.md) · [Roadmap](roadmap.md)
 
+Licensed under the [MIT License](LICENSE).
+
 A small Lua addon for **World of Warcraft: Forever**. Select a friendly player
 and click **Invite Player**, or click **Thank & Leave** to send
 your thank-you message to your party and leave five seconds later.

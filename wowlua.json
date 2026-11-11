@@ -3,6 +3,7 @@
   "package": {
     "name": "quick-party",
     "version": "1.0.0",
+    "license": "MIT",
     "wowlua": "^0.13"
   },
   "addon": {
