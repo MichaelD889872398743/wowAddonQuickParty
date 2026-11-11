@@ -23,8 +23,9 @@
 - Save only window position, visibility, minimap icon angle, and the customized thank-you message.
   Keep temporary state in memory. The user authorized message settings and a
   five-second delayed leave on 2026-11-11, extending the original resource scope.
-- Allow manual invitations during combat. Keep Thank & Leave out of combat;
-  recheck at timer expiry. A delayed departure must be cancellable, send chat
+- Allow manual invitations and Thank & Leave during combat, including combat
+  starting during the delay. Recheck the group at timer expiry.
+  A delayed departure must be cancellable, send chat
   once, and never carry over after GROUP_LEFT into a newly joined party. Call
   LeaveParty only, never uninvite other members or bypass native confirmation.
 - For behavioral changes, run tests/QuickParty_spec.lua using Lua 5.1 or a

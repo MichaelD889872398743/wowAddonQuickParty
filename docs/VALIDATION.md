@@ -66,7 +66,7 @@ not proof that every guarded API call works in the actual client.
 and minimap toggling after slash/close controls with the tool's Forever emulator.
 It requires Blizzard UI definitions
 (`test.blizzard-ui`); the bare emulator lacks the named game font templates.
-The tests passed with Blizzard UI definitions loaded on 2026-11-11: 4 passed,
+The tests passed with Blizzard UI definitions loaded on 2026-11-11: 6 passed,
 0 failed, 0 skipped. See docs/DEBUGGING.md for running it and collecting actual
 client errors. No addon code changes were needed to resolve the bare emulator's
 missing-font error. The third test checks saving and validating custom messages
@@ -79,8 +79,18 @@ feedback expiry, error payload variants, group restrictions, missing APIs,
 chat-before-leave ordering, visibility persistence, and position recovery.
 The expanded suite also passed on 2026-11-11: invites during combat; no departure
 before five seconds; cancellation without repeat chat; GROUP_LEFT before a
-new party; combat/raid/instance checks at timer expiry; missing timer API;
+new party; raid/instance checks at timer expiry; missing timer API;
 hidden-window departure; custom-message validation, persistence and defaults.
+The user subsequently reported that leaving failed in combat. The addon had
+explicit guards both on click and at timer expiry; both were removed at the
+user's request. Lua checks now cover sending/leaving while already in combat,
+entering combat during the wait, and cancelling during combat.
+`tests/CombatLeave.test.wowlua` observes calls through to the native emulator
+LeaveParty API and checks five-second timing in both combat cases. These two
+tests do not assert server membership changes: an initial membership assertion
+did not converge in the emulator, so actual departure and chat delivery remain
+in-game checks. Cached Forever LeaveParty documentation does not mark the call
+protected or restricted to hardware events. No confirmation bypass was added.
 
 ## Refinement evidence (2026-11-11)
 
@@ -140,9 +150,10 @@ edge cases and new refinements below remain **not run** in the actual client.
    Repeat after closing the window, reloading, and leaving/joining another party.
    With at least three players, confirm that the remaining members stay grouped
    when the leader leaves. Observe native confirmation where applicable.
-7. Test Invite in combat while fighting a shared elite. Thank & Leave should
-   refuse during combat; starting combat during the wait should cancel departure
-   if still in combat at expiry. Never bypass game restrictions.
+7. Test both Invite and Thank & Leave during combat while fighting a shared
+   elite. Thank & Leave should send once and depart after five seconds. Also
+   start combat during the delay and verify departure still occurs. Confirm
+   Cancel Leave works in combat. Never bypass game restrictions.
 8. Drag to screen edges, close/reopen with `/qp`, reload while hidden and shown,
    change resolution/UI scale, and run `/qp reset`. Check text and saved position.
 9. Confirm SavedVariables contains only visibility, window position, minimap

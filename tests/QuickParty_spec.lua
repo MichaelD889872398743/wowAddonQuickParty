@@ -187,7 +187,7 @@ event("CHAT_MSG_SYSTEM", "NextPlayer declines your group invitation.")
 equal(message(), "Invitation declined: NextPlayer", "only latest attempt")
 
 setup(); click("Thank & Leave"); equal(#calls, 0, "solo")
-for _, key in ipairs({"raid", "instance", "combat"}) do
+for _, key in ipairs({"raid", "instance"}) do
     setup(); state.group = true; state[key] = true
     click("Thank & Leave"); equal(#calls, 0, key)
 end
@@ -210,10 +210,18 @@ advance(5); equal(#calls, 1, "cancel never leaves or repeats chat")
 setup(); state.group = true; click("Thank & Leave")
 event("GROUP_LEFT"); state.group = true; advance(5)
 equal(#calls, 1, "never leave a new party")
-for _, key in ipairs({"raid", "instance", "combat"}) do
+for _, key in ipairs({"raid", "instance"}) do
     setup(); state.group = true; click("Thank & Leave"); state[key] = true
     advance(5); equal(#calls, 1, "recheck " .. key)
 end
+setup(); state.group = true; state.combat = true; click("Thank & Leave")
+equal(table.concat(calls, ","), "chat", "thank in combat")
+advance(4.9); equal(#calls, 1, "combat still waits five seconds")
+advance(0.1); equal(table.concat(calls, ","), "chat,leave", "leave in combat")
+setup(); state.group = true; click("Thank & Leave"); state.combat = true
+advance(5); equal(table.concat(calls, ","), "chat,leave", "combat during delay does not cancel")
+setup(); state.group = true; state.combat = true; click("Thank & Leave")
+click("Cancel Leave"); advance(5); equal(#calls, 1, "cancel in combat")
 setup(); state.group = true; click("Thank & Leave"); state.group = false
 event("GROUP_ROSTER_UPDATE"); advance(5); equal(#calls, 1, "party dissolved")
 setup(); state.group = true; C_Timer = nil

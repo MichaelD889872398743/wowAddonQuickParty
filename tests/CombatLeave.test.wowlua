@@ -1,0 +1,60 @@
+import test, expect from "wowlua:test"
+import * as mock from "wowlua:mock"
+
+-- Observe the real API call without replacing its implementation. Membership
+-- changes are server behavior; this test checks timing and combat permissions.
+local leaveRequests = 0
+local nativeLeave = C_PartyInfo.LeaveParty
+C_PartyInfo.LeaveParty = function(category)
+    leaveRequests = leaveRequests + 1
+    nativeLeave(category)
+end
+
+local function joinParty()
+    mock.spawnUnit({name = "CombatFriend", player = true, reaction = "friendly"})
+    C_PartyInfo.InviteUnit("CombatFriend")
+    mock.advanceTime(1)
+    expect(IsInGroup()).toBe(true)
+end
+
+local function clickLeave()
+    for _, child in ipairs({_G["QuickPartyWindow"]:GetChildren()}) do
+        if child:GetObjectType() == "Button" and child:GetText() == "Thank & Leave" then
+            mock.click(child)
+            return
+        end
+    end
+    error("Thank & Leave button missing")
+end
+
+@test("Thank and request leave during combat after the full five-second delay")
+local function leavesInCombat()
+    joinParty()
+    mock.player:enterCombat()
+    local before = leaveRequests
+    clickLeave()
+    expect(_G["QuickPartyStatus"]).toHaveText("Thanks sent. Leaving in 5 seconds...")
+    mock.advanceTime(4.9)
+    expect(leaveRequests).toBe(before)
+    -- Allow a frame boundary for the emulator to process the leave response.
+    mock.advanceTime(0.2)
+    mock.waitFrames(2)
+    expect(leaveRequests).toBe(before + 1)
+    expect(_G["QuickPartyStatus"]).toHaveText("Leave requested.")
+    expect(mock.errors()).toEqual({})
+    mock.player:leaveCombat()
+end
+
+@test("Entering combat during the delay still requests departure")
+local function entersCombatDuringWait()
+    joinParty()
+    local before = leaveRequests
+    clickLeave()
+    mock.player:enterCombat()
+    mock.advanceTime(5.1)
+    mock.waitFrames(2)
+    expect(leaveRequests).toBe(before + 1)
+    expect(_G["QuickPartyStatus"]).toHaveText("Leave requested.")
+    expect(mock.errors()).toEqual({})
+    mock.player:leaveCombat()
+end

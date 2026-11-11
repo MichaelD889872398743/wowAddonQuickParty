@@ -121,14 +121,6 @@ local function inviteFeedback(message)
     report(inviteOutcome)
 end
 
-local function inCombat()
-    if InCombatLockdown and InCombatLockdown() then
-        report("Try again after combat.")
-        return true
-    end
-    return false
-end
-
 local function invite()
     pendingUntil = nil
     pendingName, inviteOutcome = nil, nil
@@ -180,7 +172,6 @@ end
 
 local function thankAndLeave()
     if leaveTimer then cancelLeave(); return end
-    if inCombat() then return end
     if not IsInGroup() then
         report("You are not in a party.")
         return
@@ -210,8 +201,8 @@ local function thankAndLeave()
     leaveButton:SetText("Cancel Leave")
     report("Thanks sent. Leaving in 5 seconds...")
     leaveTimer = C_Timer.NewTimer(5, function()
-        if not ordinaryParty() or (InCombatLockdown and InCombatLockdown()) then
-            cancelLeave("Leaving cancelled: group changed or combat started.")
+        if not ordinaryParty() then
+            cancelLeave("Leaving cancelled: group changed.")
             return
         end
         leaveTimer = nil

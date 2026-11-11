@@ -36,7 +36,7 @@ game if the addon list does not refresh.
 2. **Invite a player:** select a friendly player as your target, then click
    **Invite Player**. This also works during combat. The window shows the invite
    attempt and recognized decline or already-in-a-group responses.
-3. **Thank your party and leave:** while out of combat, click **Thank & Leave**.
+3. **Thank your party and leave:** click **Thank & Leave**, in or out of combat.
    Your message is sent to party chat, then you leave after five seconds.
    Click **Cancel Leave** during the wait if you want to stay. Closing the
    window does not cancel leaving.
@@ -57,7 +57,7 @@ position, visibility, icon position, and your saved message persist across sessi
 
 Invites are manual and target-only. The addon never scans, sends automatic
 greetings, or stores player/group history. Inviting is allowed during combat.
-Thank & Leave requires being out of combat; raids and instance groups are
+Thank & Leave also works during combat; raids and instance groups are
 refused for that action. Normal same-faction parties are the
 initial supported workflow; the friendly-target check may reject cross-faction
 targets even where the client would otherwise allow invitations.
@@ -83,8 +83,8 @@ Thank & Leave sends the message once, then waits five seconds before requesting
 departure. Click **Cancel Leave** during that time to stay; the already-sent
 message is not recalled. Closing the window does not cancel the timer. Leaving
 the party cancels it, so joining a new group cannot carry over an old timer.
-Departure also cancels if the group becomes unsupported, or you are in combat
-at the end of the wait. A reload discards the pending timer.
+Departure also cancels if the group becomes unsupported. Combat does not cancel
+the pending departure. A reload discards the pending timer.
 
 The addon calls `C_PartyInfo.LeaveParty()` only; it does not kick members or
 disband them. A party with at least two remaining members can continue, with

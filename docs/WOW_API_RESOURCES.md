@@ -48,7 +48,8 @@ combat; Thank & Leave sends a configurable saved message, then waits five
 seconds before leaving. Provide cancellation, cancel stale departures on
 GROUP_LEFT, and use native frame styling. These instructions supersede the
 original predefined-message, window-only settings, and delay guidance below.
-Do not uninvite other members to leave. Thank & Leave remains out of combat.
+Do not uninvite other members to leave. The user subsequently requested that
+Thank & Leave also work during combat; combat must not block or cancel it.
 
 - Write minimal Lua and a matching `.toc` manifest; no external runtime, network requests or dependencies.
 - Create the UI with native WoW widgets, preferably entirely in Lua unless XML adds clear value.
