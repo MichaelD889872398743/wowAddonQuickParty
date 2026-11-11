@@ -6,16 +6,54 @@ A small Lua addon for **World of Warcraft: Forever**. Select a friendly player
 and click **Invite Player**, or click **Thank & Leave** to send
 your thank-you message to your party and leave five seconds later.
 
-The window can be dragged and closed. `/qp` or `/quickparty` toggles it;
-`/qp show`, `/qp hide`, and `/qp reset` control visibility and position.
-Left-click the Quick Party icon at the upper-left edge of the minimap to open
-or close the window, including after closing it with its X button.
-Drag the minimap icon with the left mouse button to move it around the rim.
-Its position is saved across reloads.
-Click **Settings** to edit the party message, then **Save Message**. The default
-is "Thanks for the party! Take care!"; **Use Default** restores it. Messages
-must be nonempty plain text of at most 255 bytes. Position, visibility and the
-message are saved, along with the minimap icon position.
+## Download and install
+
+1. Download the [QuickParty folder](QuickParty). If you download the whole
+   repository using **Code > Download ZIP**, extract the ZIP first.
+2. Copy only the `QuickParty` folder into your **WoW Forever** client's
+   `Interface/AddOns/` folder. You do not need the repository's docs, tests,
+   or development tools.
+3. Check that the files are directly inside the addon folder:
+
+   ```text
+   Interface/
+     AddOns/
+       QuickParty/
+         QuickParty.toc
+         QuickParty.lua
+   ```
+
+4. Start or restart WoW Forever. At character selection, open **AddOns** and
+   enable **Quick Party**, then enter the game.
+
+No build step or extra libraries are needed. To update, replace the installed
+`QuickParty` folder with the latest copy and run `/reload` in-game. Restart the
+game if the addon list does not refresh.
+
+## How to use
+
+1. **Open the window:** left-click the Quick Party minimap icon or type `/qp`.
+2. **Invite a player:** select a friendly player as your target, then click
+   **Invite Player**. This also works during combat. The window shows the invite
+   attempt and recognized decline or already-in-a-group responses.
+3. **Thank your party and leave:** while out of combat, click **Thank & Leave**.
+   Your message is sent to party chat, then you leave after five seconds.
+   Click **Cancel Leave** during the wait if you want to stay. Closing the
+   window does not cancel leaving.
+4. **Customize your message:** click **Settings**, edit the text, and click
+   **Save Message**. **Use Default** restores "Thanks for the party! Take care!"
+   Messages must be nonempty plain text of at most 255 bytes.
+
+Drag the window to reposition it. Close it with its X button or the minimap
+icon. Left-drag the minimap icon to move it around the minimap rim. Window
+position, visibility, icon position, and your saved message persist across sessions.
+
+| Command | Action |
+| --- | --- |
+| `/qp` or `/quickparty` | Open or close the window |
+| `/qp show` | Show the window |
+| `/qp hide` | Hide the window |
+| `/qp reset` | Return the window to the center of the screen and show it |
 
 Invites are manual and target-only. The addon never scans, sends automatic
 greetings, or stores player/group history. Inviting is allowed during combat.
@@ -24,24 +62,9 @@ refused for that action. Normal same-faction parties are the
 initial supported workflow; the friendly-target check may reject cross-faction
 targets even where the client would otherwise allow invitations.
 
-## Install and configure
-
-1. The manifest now uses `## Interface: 16001`, taken from wowlua 0.13.11's
-   Forever (`camelot`) flavor table dated 2026-10-29. This replaces the original
-   `0` placeholder that caused the addon to be marked incompatible.
-2. If your client still marks it incompatible, log into a character and run
-   `/dump GetBuildInfo()`. Compare the fourth return value with the manifest;
-   your installed client is authoritative after patches.
-3. Copy the entire `QuickParty` folder into your client's
-   `Interface/AddOns/` directory. The resulting path must be
-   `Interface/AddOns/QuickParty/QuickParty.toc`.
-4. Enable Quick Party in the addon list, then log in or `/reload`.
-5. Enable `/console scriptErrors 1` and complete [client validation](docs/VALIDATION.md).
-
-There are no runtime libraries or external services. In-game loading and the
-original invite/leave actions have been confirmed by the user. Combat inviting,
-delayed departure, custom messages and the new styling still need testing on
-your installed build.
+If the addon is missing from the list, check the folder layout above and that
+you copied it into the Forever client. For compatibility issues or Lua errors,
+see the [debugging guide](docs/DEBUGGING.md).
 
 ## Feedback and limitations
 
