@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: Quick Party
+## Notes: Invite your selected player, or thank your party and leave.
+## Author: Quick Party contributors
+## Version: 1.0.0
+## SavedVariables: QuickPartyDB
+
+QuickParty.lua

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DomenikIrrgang/wowlua/main/schema/wowlua-0.1.json",
+  "package": {
+    "name": "quick-party",
+    "version": "1.0.0",
+    "wowlua": "^0.13"
+  },
+  "addon": {
+    "name": "QuickParty",
+    "title": "Quick Party",
+    "notes": "Invite your selected player, or thank your party and leave.",
+    "saved-variables": ["QuickPartyDB"]
+  },
+  "flavors": {
+    "camelot": {}
+  },
+  "test": {
+    "blizzard-ui": true,
+    "platform": "windows"
+  },
+  "build": {
+    "src": "QuickParty",
+    "exclude": ["QuickParty/QuickParty.toc"]
+  }
+}

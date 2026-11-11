@@ -1,0 +1,86 @@
+import test, expect from "wowlua:test"
+import * as mock from "wowlua:mock"
+
+@test("Invite decline and already-grouped feedback survive roster events")
+local function invitationFeedback()
+    local friend = mock.spawnUnit({name = "InviteFriend", player = true, reaction = "friendly"})
+    mock.player:target(friend)
+    local window = _G["QuickPartyWindow"]
+    for _, child in ipairs({window:GetChildren()}) do
+        if child:GetObjectType() == "Button" and child:GetText() == "Invite Player" then
+            mock.click(child)
+            break
+        end
+    end
+    mock.fireEvent("GROUP_ROSTER_UPDATE")
+    mock.fireEvent("CHAT_MSG_SYSTEM", string.format(ERR_DECLINE_GROUP_S, "InviteFriend"),
+        "", "", "", "", "", 0, 0, "", 0, 0, "", 0, false, false, false, false, {})
+    expect(_G["QuickPartyStatus"]).toHaveText("Invitation declined: InviteFriend")
+    mock.fireEvent("UI_INFO_MESSAGE", 1, string.format(ERR_ALREADY_IN_GROUP_S, "InviteFriend"))
+    expect(_G["QuickPartyStatus"]).toHaveText("Already in a group: InviteFriend")
+    expect(mock.errors()).toEqual({})
+end
+
+@test("Forever loads Quick Party and its slash commands")
+local function loadsWindow()
+    local window = _G["QuickPartyWindow"]
+    expect(window).toBeShown()
+    expect(window).toHaveSize(300, 204)
+    mock.slash("/qp hide")
+    expect(window).never.toBeShown()
+    mock.slash("/qp show")
+    expect(window).toBeShown()
+    mock.slash("/qp reset")
+    expect(window).toBeShown()
+    expect(mock.errors()).toEqual({})
+end
+
+@test("Native settings save a custom message and restore the default")
+local function editsMessage()
+    local window = _G["QuickPartyWindow"]
+    mock.slash("/qp show")
+    for _, child in ipairs({window:GetChildren()}) do
+        if child:GetObjectType() == "Button" and child:GetText() == "Settings" then
+            mock.click(child)
+            break
+        end
+    end
+    expect(window).toHaveSize(300, 318)
+    local edit = _G["QuickPartyMessageEdit"]
+    edit:SetText("Thanks and good luck!")
+    mock.click(_G["QuickPartyMessageSave"])
+    expect(_G["QuickPartyDB"].message).toBe("Thanks and good luck!")
+    edit:SetText("   ")
+    mock.click(_G["QuickPartyMessageSave"])
+    expect(_G["QuickPartyDB"].message).toBe("Thanks and good luck!")
+    expect(mock.errors()).toEqual({})
+end
+
+@test("Minimap button toggles the window after other visibility controls")
+local function togglesFromMinimap()
+    local window = _G["QuickPartyWindow"]
+    local button = _G["QuickPartyMinimapButton"]
+    expect(button).toBeShown()
+    mock.slash("/qp show")
+    mock.click(button)
+    expect(window).never.toBeShown()
+    expect(_G["QuickPartyDB"].hidden).toBe(true)
+    expect(button).toBeShown()
+    mock.click(button)
+    expect(window).toBeShown()
+    expect(_G["QuickPartyDB"].hidden).toBe(false)
+    mock.slash("/qp hide")
+    mock.click(button)
+    expect(window).toBeShown()
+    -- The native close button must not hide the minimap launcher.
+    for _, child in ipairs({window:GetChildren()}) do
+        if child:GetScript("OnClick") and child:GetText() == nil then
+            mock.click(child)
+            break
+        end
+    end
+    expect(window).never.toBeShown()
+    mock.click(button)
+    expect(window).toBeShown()
+    expect(mock.errors()).toEqual({})
+end
